@@ -1,47 +1,28 @@
-const express = require('express');
-const fs = require('fs');
-const app = express();
-
-app.use(express.json()); // Parse JSON body
-
-const CHANNEL_ID = -1002484169182;
-const DATA_FILE = 'data.txt';
-
-// Handle webhook POST
-app.post('/', (req, res) => {
-  const payload = req.body;
-
-  if (
-    payload.channel_post &&
-    payload.channel_post.chat &&
-    payload.channel_post.chat.id === CHANNEL_ID &&
-    payload.channel_post.text
-  ) {
-    // Write the text to a file
-    fs.writeFile(DATA_FILE, payload.channel_post.text, (err) => {
-      if (err) {
-        console.error('Error writing file:', err);
-        res.status(500).send('Error writing file');
-      } else {
-        res.send('OK');
-      }
-    });
-  } else {
-    res.send('Ignored');
+// Mock of incoming Telegram webhook payload
+const mockTelegramWebhook = {
+  channel_post: {
+    chat: {
+      id: -1002484169182
+    },
+    text: "This is a test message from Telegram!"
   }
-});
+};
 
-// Read and serve file contents
-app.get('/', (req, res) => {
-  fs.readFile(DATA_FILE, 'utf8', (err, data) => {
-    if (err) {
-      return res.send('No data yet.');
-    }
-    res.send(data);
-  });
-});
+// Simulate server logic in browser
+let output = '';
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (mockTelegramWebhook.channel_post &&
+    mockTelegramWebhook.channel_post.chat.id ===-1002484169182 &&
+    mockTelegramWebhook.channel_post.text) {
+    
+    const text = mockTelegramWebhook.channel_post.text;
+
+    // Simulate writing to a "file" by saving to localStorage
+    localStorage.setItem('channel_text', text);
+}
+
+// Simulate reading from the "file"
+output = localStorage.getItem('channel_text');
+
+// Show the result on the page
+document.getElementById('output').textContent = output;
